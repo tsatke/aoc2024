@@ -21,8 +21,9 @@ impl<P> Multiplications<P> {
         Some(())
     }
 
-    fn scan_mul(&mut self) -> bool {
-        self.index + 3 <= self.input.len() && &self.input[self.index..self.index + 3] == b"mul"
+    fn scan(&mut self, s: &str) -> bool {
+        self.index + s.len() <= self.input.len()
+            && &self.input[self.index..self.index + s.len()] == s.as_bytes()
     }
 
     fn parse_num(&mut self) -> Option<u16> {
@@ -42,10 +43,6 @@ impl<P> Multiplications<P> {
         }
         Some(left)
     }
-
-    fn scan_dont(&mut self) -> bool {
-        self.index + 7 <= self.input.len() && &self.input[self.index..self.index + 7] == b"don't()"
-    }
 }
 
 fn is_digit(c: u8) -> bool {
@@ -61,16 +58,8 @@ impl Iterator for Multiplications<P1> {
         }
 
         'outer: loop {
-            if self.scan_mul() {
-                // 'mul'
-                self.index += 3;
-
-                // opening parenthesis
-                if self.input[self.index] != b'(' {
-                    self.advance()?;
-                    continue 'outer;
-                }
-                self.advance()?;
+            if self.scan("mul(") {
+                self.index += 4;
 
                 let Some(left) = self.parse_num() else {
                     continue 'outer;
@@ -110,16 +99,9 @@ impl Iterator for Multiplications<P2> {
         }
 
         'outer: loop {
-            if self.scan_mul() {
+            if self.scan("mul(") {
                 // 'mul'
-                self.index += 3;
-
-                // opening parenthesis
-                if self.input[self.index] != b'(' {
-                    self.advance()?;
-                    continue 'outer;
-                }
-                self.advance()?;
+                self.index += 4;
 
                 let Some(left) = self.parse_num() else {
                     continue 'outer;
@@ -144,7 +126,7 @@ impl Iterator for Multiplications<P2> {
                 self.advance()?;
 
                 return Some((left, right));
-            } else if self.scan_dont() {
+            } else if self.scan("don't()") {
                 // 'don't()'
                 self.index += 7;
 
@@ -166,21 +148,23 @@ impl FusedIterator for Multiplications<P1> {}
 impl FusedIterator for Multiplications<P2> {}
 
 pub fn part1() -> usize {
-    Multiplications::<P1> {
+    eval_muls(Multiplications::<P1> {
         input: INPUT.as_bytes(),
         index: 0,
         _part: PhantomData,
-    }
-    .fold(0, |acc, (a, b)| acc + (a as usize * b as usize))
+    })
 }
 
 pub fn part2() -> usize {
-    Multiplications::<P2> {
+    eval_muls(Multiplications::<P2> {
         input: INPUT.as_bytes(),
         index: 0,
         _part: PhantomData,
-    }
-    .fold(0, |acc, (a, b)| acc + (a as usize * b as usize))
+    })
+}
+
+fn eval_muls(muls: impl Iterator<Item = (u16, u16)>) -> usize {
+    muls.fold(0, |acc, (a, b)| acc + (a as usize * b as usize))
 }
 
 #[cfg(test)]
