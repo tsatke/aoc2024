@@ -45,7 +45,7 @@ pub fn part2() -> i64 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day01::{part1, part2};
+    use super::*;
 
     #[test]
     fn test_results() {
