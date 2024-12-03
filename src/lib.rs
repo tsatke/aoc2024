@@ -1,6 +1,7 @@
 #![feature(custom_test_frameworks)]
 
 pub mod day01;
+pub mod day02;
 
 macro_rules! fast_uint_parse_impl {
     ($($typ:ty),*) => {
