@@ -28,7 +28,7 @@ pub fn part1() -> u32 {
     right.sort_unstable();
 
     left.into_iter()
-        .zip(right.into_iter())
+        .zip(right)
         .fold(0, |acc, (a, b)| acc + a.abs_diff(b))
 }
 
