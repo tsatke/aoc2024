@@ -2,6 +2,12 @@
 
 Rust. Performance.
 
+Rules:
+* no input pre-processing
+* portable rust (if you're reading this, you can probably execute it on your machine)
+* measured with criterion (avg time)
+* unstable features allowed
+
 ## Benchmarks
 
 Criterion, MacBook Pro M1 Max 2021.
