@@ -17,11 +17,14 @@ pub fn part1() -> usize {
 }
 
 fn is_slice_valid(elems: &[u8]) -> bool {
-    elems
-        .iter()
+    is_iter_valid(elems.iter())
+}
+
+fn is_iter_valid<'a>(iter: impl Iterator<Item = &'a u8> + DoubleEndedIterator + Clone) -> bool {
+    iter.clone()
         .tuple_windows()
         .all(|(&a, &b)| (1..=3).contains(&a.abs_diff(b)))
-        && (elems.is_sorted() || elems.iter().rev().is_sorted())
+        && (iter.clone().is_sorted() || iter.clone().rev().is_sorted())
 }
 
 fn into_array(arr: &mut [u8; 8], items: impl Iterator<Item = u8>) -> usize {
@@ -44,19 +47,14 @@ pub fn part2() -> usize {
             );
             let full_line_elems = &full_line_elems[..=last];
             is_slice_valid(&full_line_elems) || {
-                let mut one_elem_skipped = [0_u8; 8];
                 (0..line.len()).any(|skip| {
-                    let last = into_array(
-                        &mut one_elem_skipped,
-                        full_line_elems.iter().enumerate().filter_map(|(i, &n)| {
-                            if i == skip {
-                                None
-                            } else {
-                                Some(n)
-                            }
-                        }),
-                    );
-                    is_slice_valid(&one_elem_skipped[..=last])
+                    is_iter_valid(full_line_elems.iter().enumerate().filter_map(|(i, n)| {
+                        if i == skip {
+                            None
+                        } else {
+                            Some(n)
+                        }
+                    }))
                 })
             }
         })
