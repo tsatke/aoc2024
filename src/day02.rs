@@ -4,15 +4,16 @@ use itertools::Itertools;
 const INPUT: &str = include_str!("../inputs/input_day2.txt");
 
 pub fn part1() -> usize {
-    INPUT.lines().filter(is_line_valid).count()
-}
+    INPUT
+        .lines()
+        .filter(|line| {
+            let mut elems = [0_u8; 8];
+            let last = into_array(&mut elems, line.split_whitespace().map(u8::from_str_fast));
+            let elems = &elems[..=last];
 
-fn is_line_valid(line: &&str) -> bool {
-    let mut elems = [0_u8; 8];
-    let last = into_array(&mut elems, line.split_whitespace().map(u8::from_str_fast));
-    let elems = &elems[..=last];
-
-    is_slice_valid(elems)
+            is_slice_valid(elems)
+        })
+        .count()
 }
 
 fn is_slice_valid(elems: &[u8]) -> bool {
@@ -36,18 +37,26 @@ pub fn part2() -> usize {
     INPUT
         .lines()
         .filter(|line| {
-            is_line_valid(line) || {
+            let mut full_line_elems = [0_u8; 8];
+            let last = into_array(
+                &mut full_line_elems,
+                line.split_whitespace().map(u8::from_str_fast),
+            );
+            let full_line_elems = &full_line_elems[..=last];
+            is_slice_valid(&full_line_elems) || {
+                let mut one_elem_skipped = [0_u8; 8];
                 (0..line.len()).any(|skip| {
-                    let mut elems = [0_u8; 8];
                     let last = into_array(
-                        &mut elems,
-                        line.split_whitespace()
-                            .map(u8::from_str_fast)
-                            .enumerate()
-                            .filter_map(|(i, n)| if i == skip { None } else { Some(n) }),
+                        &mut one_elem_skipped,
+                        full_line_elems.iter().enumerate().filter_map(|(i, &n)| {
+                            if i == skip {
+                                None
+                            } else {
+                                Some(n)
+                            }
+                        }),
                     );
-                    let elems = &elems[..=last];
-                    is_slice_valid(elems)
+                    is_slice_valid(&one_elem_skipped[..=last])
                 })
             }
         })
@@ -56,6 +65,7 @@ pub fn part2() -> usize {
 
 #[cfg(test)]
 mod tests {
+    use crate::day01::part2;
     use crate::day02::{part1, part2};
 
     #[test]
