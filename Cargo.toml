@@ -1,0 +1,12 @@
+[package]
+name = "aoc2024"
+version = "0.1.0"
+edition = "2021"
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dependencies]
+criterion = { version = "0.5.1", features = ["html_reports"] }
+pprof = { version = "0.14.0", features = ["flamegraph"] }
