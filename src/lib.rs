@@ -7,8 +7,8 @@ const INPUT: &str = include_str!("../inputs/input_day1.txt");
 pub fn solution_01_1() -> usize {
     let lines = INPUT.lines().count();
 
-    let mut left = vec![0; lines];
-    let mut right = vec![0; lines];
+    let mut left = Vec::with_capacity(lines);
+    let mut right = Vec::with_capacity(lines);
     INPUT
         .lines()
         .map(|line| (&line[0..5], &line[8..]))
