@@ -5,6 +5,7 @@ const INPUT: &str = include_str!("../inputs/input_day3.txt");
 struct Multiplications {
     input: &'static [u8],
     index: usize,
+    check_for_dont: bool,
 }
 
 impl Multiplications {
@@ -30,14 +31,11 @@ impl Iterator for Multiplications {
         }
 
         'outer: loop {
-            if self.index + 3 >= self.input.len() {
-                return None;
-            }
-            if &self.input[self.index..self.index + 3] == b"mul" {
+            if self.index + 3 <= self.input.len()
+                && &self.input[self.index..self.index + 3] == b"mul"
+            {
                 // 'mul'
-                for _ in 0..3 {
-                    self.advance()?;
-                }
+                self.index += 3;
 
                 // opening parenthesis
                 if self.input[self.index] != b'(' {
@@ -93,6 +91,21 @@ impl Iterator for Multiplications {
                 self.advance()?;
 
                 return Some((left, right));
+            } else if self.check_for_dont
+                && self.index + 7 <= self.input.len()
+                && &self.input[self.index..self.index + 7] == b"don't()"
+            {
+                // 'don't()'
+                self.index += 7;
+
+                // search for the next 'do()'
+                while self.index + 4 < self.input.len() {
+                    if &self.input[self.index..self.index + 4] == b"do()" {
+                        self.index += 4;
+                        continue 'outer;
+                    }
+                    self.advance()?;
+                }
             }
             self.advance()?;
         }
@@ -102,15 +115,21 @@ impl Iterator for Multiplications {
 impl FusedIterator for Multiplications {}
 
 pub fn part1() -> usize {
-    let computer = Multiplications {
+    Multiplications {
         input: INPUT.as_bytes(),
         index: 0,
-    };
-    computer.fold(0, |acc, (a, b)| acc + (a as usize * b as usize))
+        check_for_dont: false,
+    }
+    .fold(0, |acc, (a, b)| acc + (a as usize * b as usize))
 }
 
 pub fn part2() -> usize {
-    0
+    Multiplications {
+        input: INPUT.as_bytes(),
+        index: 0,
+        check_for_dont: true,
+    }
+    .fold(0, |acc, (a, b)| acc + (a as usize * b as usize))
 }
 
 #[cfg(test)]
@@ -120,6 +139,6 @@ mod tests {
     #[test]
     fn test_results() {
         assert_eq!(part1(), 189527826);
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 63013756);
     }
 }
