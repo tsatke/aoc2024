@@ -1,14 +1,9 @@
-#![feature(array_chunks)]
 #![feature(custom_test_frameworks)]
-#![feature(portable_simd)]
-
-use std::ops::Sub;
-use std::simd::num::SimdInt;
 
 const INPUT: &str = include_str!("../inputs/input_day1.txt");
 
 pub fn solution_01_1() -> u64 {
-    const LINES: usize = (1000 + 63) & !64;
+    const LINES: usize = 1000;
 
     let mut left = [0_i64; LINES];
     let mut right = [0_i64; LINES];
