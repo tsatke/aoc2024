@@ -11,8 +11,7 @@ pub fn solution_01_1() -> usize {
     let mut right = vec![0; lines];
     INPUT
         .lines()
-        .map(str::split_ascii_whitespace)
-        .map(|mut cols| (cols.next().unwrap(), cols.next().unwrap()))
+        .map(|line| (&line[0..5], &line[8..]))
         .for_each(|(a, b)| {
             left.push(a.parse::<usize>().unwrap());
             right.push(b.parse::<usize>().unwrap());
