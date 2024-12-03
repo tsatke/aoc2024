@@ -47,15 +47,14 @@ pub fn part2() -> usize {
             );
             let full_line_elems = &full_line_elems[..=last];
             is_slice_valid(&full_line_elems) || {
-                (0..line.len()).any(|skip| {
-                    is_iter_valid(full_line_elems.iter().enumerate().filter_map(|(i, n)| {
-                        if i == skip {
-                            None
-                        } else {
-                            Some(n)
-                        }
-                    }))
-                })
+                (0..line.len())
+                    .map(|skip| {
+                        full_line_elems
+                            .iter()
+                            .enumerate()
+                            .filter_map(move |(i, n)| if i == skip { None } else { Some(n) })
+                    })
+                    .any(is_iter_valid)
             }
         })
         .count()
