@@ -12,8 +12,8 @@ pub fn solution_01_1() -> u32 {
         .map(|line| (&line[0..5], &line[8..]))
         .enumerate()
         .for_each(|(i, (a, b))| {
-            left[i] = a.parse::<i32>().unwrap();
-            right[i] = b.parse::<i32>().unwrap();
+            left[i] = u32::from_str_fast(a) as i32;
+            right[i] = u32::from_str_fast(b) as i32;
         });
 
     left.sort_unstable();
@@ -28,9 +28,31 @@ pub fn solution_01_2() -> usize {
     0
 }
 
+macro_rules! fast_uint_parse_impl {
+    ($($typ:ty),*) => {
+        $(impl FromStrFast for $typ {
+            fn from_str_fast(s: &str) -> Self {
+                s.bytes()
+                    .fold(0, |acc, c| acc * 10 + (c - b'0') as $typ)
+            }
+        })*
+    };
+}
+
+fast_uint_parse_impl!(u8, u16, u32, u64, u128, usize);
+
+pub trait FromStrFast {
+    fn from_str_fast(s: &str) -> Self;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_fast_uint_parse() {
+        assert_eq!(u32::from_str_fast("123"), 123);
+    }
 
     #[test]
     fn test_part1() {
