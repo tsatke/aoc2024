@@ -2,18 +2,18 @@
 
 const INPUT: &str = include_str!("../inputs/input_day1.txt");
 
-pub fn solution_01_1() -> u64 {
+pub fn solution_01_1() -> u32 {
     const LINES: usize = 1000;
 
-    let mut left = [0_i64; LINES];
-    let mut right = [0_i64; LINES];
+    let mut left = [0_i32; LINES];
+    let mut right = [0_i32; LINES];
     INPUT
         .lines()
         .map(|line| (&line[0..5], &line[8..]))
         .enumerate()
         .for_each(|(i, (a, b))| {
-            left[i] = a.parse::<i64>().unwrap();
-            right[i] = b.parse::<i64>().unwrap();
+            left[i] = a.parse::<i32>().unwrap();
+            right[i] = b.parse::<i32>().unwrap();
         });
 
     left.sort_unstable();
