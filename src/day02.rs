@@ -8,7 +8,10 @@ pub fn part1() -> usize {
         .lines()
         .filter(|line| {
             let mut elems = [0_u8; 8];
-            let last = into_array(&mut elems, line.split_whitespace().map(u8::from_str_fast));
+            let last = into_array(
+                &mut elems,
+                line.split_ascii_whitespace().map(u8::from_str_fast),
+            );
             let elems = &elems[..=last];
 
             is_slice_valid(elems)
@@ -43,7 +46,7 @@ pub fn part2() -> usize {
             let mut full_line_elems = [0_u8; 8];
             let last = into_array(
                 &mut full_line_elems,
-                line.split_whitespace().map(u8::from_str_fast),
+                line.split_ascii_whitespace().map(u8::from_str_fast),
             );
             let full_line_elems = &full_line_elems[..=last];
             is_slice_valid(&full_line_elems) || {
