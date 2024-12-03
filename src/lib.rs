@@ -5,16 +5,17 @@
 const INPUT: &str = include_str!("../inputs/input_day1.txt");
 
 pub fn solution_01_1() -> usize {
-    let lines = INPUT.lines().count();
+    const LINES: usize = 1000;
 
-    let mut left = Vec::with_capacity(lines);
-    let mut right = Vec::with_capacity(lines);
+    let mut left = [0_usize; LINES];
+    let mut right = [0_usize; LINES];
     INPUT
         .lines()
         .map(|line| (&line[0..5], &line[8..]))
-        .for_each(|(a, b)| {
-            left.push(a.parse::<usize>().unwrap());
-            right.push(b.parse::<usize>().unwrap());
+        .enumerate()
+        .for_each(|(i, (a, b))| {
+            left[i] = a.parse::<usize>().unwrap();
+            right[i] = b.parse::<usize>().unwrap();
         });
 
     left.sort_unstable();
