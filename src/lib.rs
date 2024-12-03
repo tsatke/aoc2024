@@ -9,11 +9,16 @@ pub fn solution_01_1() -> u32 {
     let mut right = [0_i32; LINES];
     INPUT
         .lines()
-        .map(|line| (&line[0..5], &line[8..]))
+        .map(|line| {
+            (
+                u32::from_str_fast(&line[0..5]),
+                u32::from_str_fast(&line[8..]),
+            )
+        })
         .enumerate()
         .for_each(|(i, (a, b))| {
-            left[i] = u32::from_str_fast(a) as i32;
-            right[i] = u32::from_str_fast(b) as i32;
+            left[i] = a as i32;
+            right[i] = b as i32;
         });
 
     left.sort_unstable();
