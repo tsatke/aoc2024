@@ -19,7 +19,7 @@ fn populate_columns(left: &mut [i32; 1000], right: &mut [i32; 1000]) {
         });
 }
 
-pub fn solution_01_1() -> u32 {
+pub fn part1() -> u32 {
     let mut left = [0_i32; LINES];
     let mut right = [0_i32; LINES];
     populate_columns(&mut left, &mut right);
@@ -32,7 +32,7 @@ pub fn solution_01_1() -> u32 {
         .fold(0, |acc, (a, b)| acc + a.abs_diff(b))
 }
 
-pub fn solution_01_2() -> i64 {
+pub fn part2() -> i64 {
     let mut left = [0_i32; LINES];
     let mut right = [0_i32; LINES];
     populate_columns(&mut left, &mut right);
@@ -45,11 +45,11 @@ pub fn solution_01_2() -> i64 {
 
 #[cfg(test)]
 mod tests {
-    use crate::{solution_01_1, solution_01_2};
+    use crate::day01::{part1, part2};
 
     #[test]
     fn test_results() {
-        assert_eq!(solution_01_1(), 2066446);
-        assert_eq!(solution_01_2(), 24931009);
+        assert_eq!(part1(), 2066446);
+        assert_eq!(part2(), 24931009);
     }
 }

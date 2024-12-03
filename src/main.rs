@@ -6,5 +6,5 @@ macro_rules! solve {
 }
 
 pub fn main() {
-    solve!(01, aoc2024::solution_01_1, aoc2024::solution_01_2);
+    solve!(01, aoc2024::day01::part1, aoc2024::day01::part2);
 }
