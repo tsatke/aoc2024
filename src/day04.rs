@@ -62,32 +62,31 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    let bytes = INPUT.as_bytes();
-    bytes
-        .iter()
-        .enumerate()
-        .take(bytes.len() - LINE_LENGTH - 2)
-        .skip(LINE_LENGTH + 2)
-        .filter(|(i, b)| {
-            if i % (LINE_LENGTH + 1) == 0 {
-                return false;
+    INPUT
+        .as_bytes()
+        .chunks(LINE_LENGTH + 1)
+        .map_windows::<_, _, 3>(|&lines| {
+            let mut count = 0;
+
+            let mut buf_lr = [0; 3];
+            let mut buf_rl = [0; 3];
+
+            for i in 0..LINE_LENGTH - 2 {
+                buf_lr[0] = lines[0][i];
+                buf_lr[1] = lines[1][i + 1];
+                buf_lr[2] = lines[2][i + 2];
+
+                buf_rl[0] = lines[0][i + 2];
+                buf_rl[1] = lines[1][i + 1];
+                buf_rl[2] = lines[2][i];
+
+                count += ((&buf_lr == b"MAS" || &buf_lr == b"SAM")
+                    && (&buf_rl == b"MAS" || &buf_rl == b"SAM")) as usize;
             }
 
-            if **b != b'A' {
-                return false;
-            }
-
-            let top_right = i - LINE_LENGTH;
-            let top_left = top_right - 2;
-            let bottom_left = i + LINE_LENGTH;
-            let bottom_right = bottom_left + 2;
-
-            ((bytes[top_left] == b'M' && bytes[bottom_right] == b'S')
-                || (bytes[top_left] == b'S' && bytes[bottom_right] == b'M'))
-                && ((bytes[top_right] == b'M' && bytes[bottom_left] == b'S')
-                    || (bytes[top_right] == b'S' && bytes[bottom_left] == b'M'))
+            count
         })
-        .count()
+        .sum::<usize>()
 }
 
 #[cfg(test)]
