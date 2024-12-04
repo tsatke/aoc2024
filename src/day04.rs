@@ -68,22 +68,22 @@ pub fn part2() -> usize {
         .map_windows::<_, _, 3>(|&lines| {
             let mut count = 0;
 
-            let mut buf_lr = [0; 3];
-            let mut buf_rl = [0; 3];
+            let mut buf_lr = [0; 2];
+            let mut buf_rl = [0; 2];
 
-            for i in 0..LINE_LENGTH - 2 {
-                // checking whether the center is 'A' doesn't make this faster
+            for i in 1..LINE_LENGTH - 1 {
+                if lines[1][i] != b'A' {
+                    continue;
+                }
 
-                buf_lr[0] = lines[0][i];
-                buf_lr[1] = lines[1][i + 1];
-                buf_lr[2] = lines[2][i + 2];
+                buf_lr[0] = lines[0][i - 1];
+                buf_lr[1] = lines[2][i + 1];
 
-                buf_rl[0] = lines[0][i + 2];
-                buf_rl[1] = lines[1][i + 1];
-                buf_rl[2] = lines[2][i];
+                buf_rl[0] = lines[0][i + 1];
+                buf_rl[1] = lines[2][i - 1];
 
-                count += ((&buf_lr == b"MAS" || &buf_lr == b"SAM")
-                    && (&buf_rl == b"MAS" || &buf_rl == b"SAM")) as usize;
+                count += ((&buf_lr == b"MS" || &buf_lr == b"SM")
+                    && (&buf_rl == b"MS" || &buf_rl == b"SM")) as usize;
             }
 
             count
