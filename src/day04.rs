@@ -10,9 +10,25 @@ pub fn part1() -> usize {
         .filter(|&w| w == b"XMAS" || w == b"SAMX")
         .count();
 
-    let col_sum: usize = (0..LINE_LENGTH)
-        .map(|i| INPUT.bytes().skip(i).step_by(LINE_LENGTH + 1))
-        .map(count_xmas_samx)
+    let col_sum: usize = bytes
+        .chunks(LINE_LENGTH + 1)
+        .map_windows::<_, _, 4>(|&lines| {
+            let mut count = 0;
+
+            let mut buf = [0; 4];
+
+            // very last line doesn't contain a line break, so use the last line's length
+            for i in 0..lines[3].len() {
+                buf[0] = lines[0][i];
+                buf[1] = lines[1][i];
+                buf[2] = lines[2][i];
+                buf[3] = lines[3][i];
+
+                count += (&buf == b"XMAS" || &buf == b"SAMX") as usize;
+            }
+
+            count
+        })
         .sum();
 
     let mut diag_sum_lr = (0..LINE_LENGTH)
