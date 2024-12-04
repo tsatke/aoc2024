@@ -18,7 +18,7 @@ pub fn part1() -> usize {
             let mut buf = [0; 4];
 
             // very last line doesn't contain a line break, so use the last line's length
-            for i in 0..lines[3].len() {
+            for i in 0..LINE_LENGTH {
                 buf[0] = lines[0][i];
                 buf[1] = lines[1][i];
                 buf[2] = lines[2][i];
@@ -31,55 +31,34 @@ pub fn part1() -> usize {
         })
         .sum();
 
-    let mut diag_sum_lr = (0..LINE_LENGTH)
-        .map(move |i| {
-            (i..LINE_LENGTH)
-                .zip(0..LINE_LENGTH - i)
-                .map(move |(c, r)| r * (LINE_LENGTH + 1) + c)
+    let diag = bytes
+        .chunks(LINE_LENGTH + 1)
+        .map_windows::<_, _, 4>(|&lines| {
+            let mut count = 0;
+
+            let mut buf_lr = [0; 4];
+            let mut buf_rl = [0; 4];
+
+            for i in 0..LINE_LENGTH - 3 {
+                buf_lr[0] = lines[0][i];
+                buf_lr[1] = lines[1][i + 1];
+                buf_lr[2] = lines[2][i + 2];
+                buf_lr[3] = lines[3][i + 3];
+
+                buf_rl[0] = lines[0][i + 3];
+                buf_rl[1] = lines[1][i + 2];
+                buf_rl[2] = lines[2][i + 1];
+                buf_rl[3] = lines[3][i];
+
+                count += (&buf_lr == b"XMAS" || &buf_lr == b"SAMX") as usize;
+                count += (&buf_rl == b"XMAS" || &buf_rl == b"SAMX") as usize;
+            }
+
+            count
         })
-        .filter(|it| it.len() >= 4)
-        .rev()
-        .map(|diag| count_xmas_samx(diag.map(|i| bytes[i])))
         .sum::<usize>();
 
-    diag_sum_lr += (1..LINE_LENGTH)
-        .map(move |i| {
-            (i..LINE_LENGTH)
-                .zip(0..LINE_LENGTH - i)
-                .map(move |(r, c)| r * (LINE_LENGTH + 1) + c)
-        })
-        .filter(|it| it.len() >= 4)
-        .map(|diag| count_xmas_samx(diag.map(|i| bytes[i])))
-        .sum::<usize>();
-
-    let mut diag_sum_rl = (0..LINE_LENGTH)
-        .map(move |i| {
-            (0..i + 1)
-                .zip(0..i + 1)
-                .map(move |(c, r)| r * (LINE_LENGTH + 1) + (i - c))
-        })
-        .filter(|it| it.len() >= 4)
-        .map(|diag| count_xmas_samx(diag.map(|i| bytes[i])))
-        .sum::<usize>();
-
-    diag_sum_rl += (1..LINE_LENGTH)
-        .map(move |i| {
-            (i..LINE_LENGTH)
-                .zip(i..LINE_LENGTH)
-                .map(move |(c, r)| r * (LINE_LENGTH + 1) + (LINE_LENGTH - c + i - 1))
-        })
-        .filter(|it| it.len() >= 4)
-        .map(|diag| count_xmas_samx(diag.map(|i| bytes[i])))
-        .sum::<usize>();
-
-    line_sum + col_sum + diag_sum_lr + diag_sum_rl
-}
-
-fn count_xmas_samx(haystack: impl Iterator<Item = u8>) -> usize {
-    haystack
-        .map_windows::<_, _, 4>(|w| w == b"XMAS" || w == b"SAMX")
-        .filter(|&b| b)
-        .count()
+    line_sum + col_sum + diag
 }
 
 pub fn part2() -> usize {
