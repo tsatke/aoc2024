@@ -3,14 +3,17 @@ const INPUT: &str = include_str!("../inputs/input_day4.txt");
 const LINE_LENGTH: usize = 140;
 
 pub fn part1() -> usize {
-    let line_sum: usize = INPUT.lines().map(str::bytes).map(count_xmas_samx).sum();
+    let bytes = INPUT.as_bytes();
+
+    let line_sum = bytes
+        .array_windows::<4>()
+        .filter(|&w| w == b"XMAS" || w == b"SAMX")
+        .count();
 
     let col_sum: usize = (0..LINE_LENGTH)
         .map(|i| INPUT.bytes().skip(i).step_by(LINE_LENGTH + 1))
         .map(count_xmas_samx)
         .sum();
-
-    let bytes = INPUT.as_bytes();
 
     let mut diag_sum_lr = (0..LINE_LENGTH)
         .map(move |i| {

@@ -1,5 +1,6 @@
 #![feature(custom_test_frameworks)]
 #![feature(iter_map_windows)]
+#![feature(array_windows)]
 
 pub mod day01;
 pub mod day02;
