@@ -72,6 +72,8 @@ pub fn part2() -> usize {
             let mut buf_rl = [0; 3];
 
             for i in 0..LINE_LENGTH - 2 {
+                // checking whether the center is 'A' doesn't make this faster
+
                 buf_lr[0] = lines[0][i];
                 buf_lr[1] = lines[1][i + 1];
                 buf_lr[2] = lines[2][i + 2];
