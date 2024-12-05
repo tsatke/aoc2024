@@ -1,11 +1,13 @@
 #![feature(custom_test_frameworks)]
 #![feature(iter_map_windows)]
 #![feature(array_windows)]
+extern crate core;
 
 pub mod day01;
 pub mod day02;
 pub mod day03;
 pub mod day04;
+pub mod day05;
 
 macro_rules! fast_uint_parse_impl {
     ($($typ:ty),*) => {
