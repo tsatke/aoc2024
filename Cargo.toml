@@ -15,5 +15,6 @@ name = "bench"
 harness = false
 
 [dependencies]
+ahash = "0.8.11"
 criterion = { version = "0.5.1", features = ["html_reports"] }
 itertools = "0.13.0"

@@ -1,4 +1,5 @@
 use crate::FromStrFast;
+use ahash::AHasher;
 use std::cmp::Ordering;
 use std::collections::HashSet;
 use std::hash::{BuildHasher, Hasher};
@@ -7,43 +8,21 @@ use std::ops::BitXor;
 const INPUT: &str = include_str!("../inputs/input_day5.txt");
 
 #[derive(Copy, Clone)]
-struct FnvBuildHasher;
+struct AHashBuilder;
 
-impl BuildHasher for FnvBuildHasher {
-    type Hasher = FnvHasher;
+impl BuildHasher for AHashBuilder {
+    type Hasher = AHasher;
 
     fn build_hasher(&self) -> Self::Hasher {
-        FnvHasher::new()
-    }
-}
-
-struct FnvHasher(u64);
-
-impl FnvHasher {
-    const fn new() -> Self {
-        Self(0xcbf29ce484222325)
-    }
-}
-
-impl Hasher for FnvHasher {
-    fn finish(&self) -> u64 {
-        self.0
-    }
-
-    fn write(&mut self, bytes: &[u8]) {
-        const MAGIC_PRIME: u64 = 0x00000100000001b3;
-
-        for &b in bytes {
-            self.0 = self.0.bitxor(b as u64).wrapping_mul(MAGIC_PRIME);
-        }
+        AHasher::default()
     }
 }
 
 fn init() -> (
-    [HashSet<u8, FnvBuildHasher>; u8::MAX as usize],
+    [HashSet<u8, AHashBuilder>; u8::MAX as usize],
     impl Iterator<Item = &'static str>,
 ) {
-    let mut requirements = [const { HashSet::with_hasher(FnvBuildHasher) }; u8::MAX as usize];
+    let mut requirements = [const { HashSet::with_hasher(AHashBuilder) }; u8::MAX as usize];
     let mut input = INPUT.lines();
     input
         .by_ref()
