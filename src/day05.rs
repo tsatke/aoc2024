@@ -1,5 +1,4 @@
 use crate::FromStrFast;
-use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
 const INPUT: &str = include_str!("../inputs/input_day5.txt");
@@ -20,8 +19,7 @@ pub fn part1() -> usize {
             if line
                 .split(',')
                 .map(u8::from_str_fast)
-                .tuple_windows()
-                .all(|(l, r)| requirements.get(&l).map_or(false, |reqs| reqs.contains(&r)))
+                .is_sorted_by(|&l, r| requirements[&l].contains(r))
             {
                 let center = line.len() / 2;
                 Some(usize::from_str_fast(&line[center - 1..center + 1]))
