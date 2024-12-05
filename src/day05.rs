@@ -1,4 +1,5 @@
 use crate::FromStrFast;
+use std::cmp::Ordering;
 use std::collections::HashSet;
 use std::hash::{BuildHasher, Hasher};
 use std::ops::BitXor;
@@ -38,7 +39,10 @@ impl Hasher for FnvHasher {
     }
 }
 
-pub fn part1() -> usize {
+fn init() -> (
+    [HashSet<u8, FnvBuildHasher>; u8::MAX as usize],
+    impl Iterator<Item = &'static str>,
+) {
     let mut requirements = [const { HashSet::with_hasher(FnvBuildHasher) }; u8::MAX as usize];
     let mut input = INPUT.lines();
     input
@@ -48,6 +52,11 @@ pub fn part1() -> usize {
         .for_each(|(l, r)| {
             requirements[l as usize].insert(r);
         });
+    (requirements, input)
+}
+
+pub fn part1() -> usize {
+    let (requirements, input) = init();
 
     input
         .filter_map(|line| {
@@ -66,7 +75,35 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    0
+    let (requirements, input) = init();
+
+    input
+        .filter_map(|line| {
+            let mut elems = [0_u8; 23];
+            let mut last = 0;
+            line.split(',')
+                .map(u8::from_str_fast)
+                .zip(elems.iter_mut())
+                .enumerate()
+                .for_each(|(i, (elem, slot))| {
+                    *slot = elem;
+                    last = i;
+                });
+            let elems = &mut elems[..=last];
+            if elems.is_sorted_by(|&l, r| requirements[l as usize].contains(r)) {
+                None
+            } else {
+                elems.sort_by(|&l, r| {
+                    if requirements[l as usize].contains(r) {
+                        Ordering::Less
+                    } else {
+                        Ordering::Greater
+                    }
+                });
+                Some(elems[elems.len() / 2] as usize)
+            }
+        })
+        .sum::<usize>()
 }
 
 #[cfg(test)]
@@ -76,6 +113,6 @@ mod tests {
     #[test]
     fn test_results() {
         assert_eq!(part1(), 4905);
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 6204);
     }
 }
