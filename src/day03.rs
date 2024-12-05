@@ -38,7 +38,7 @@ impl<P> Multiplications<P> {
                 break;
             }
             let digit = self.input[self.index] - b'0';
-            left = left * 10 + digit as u16;
+            left = left * 10 + u16::from(digit);
 
             self.advance()?;
         }
@@ -144,6 +144,7 @@ impl Iterator for Multiplications<P2> {
 impl FusedIterator for Multiplications<P1> {}
 impl FusedIterator for Multiplications<P2> {}
 
+#[must_use]
 pub fn part1() -> usize {
     eval_muls(Multiplications::<P1> {
         input: INPUT.as_bytes(),
@@ -152,6 +153,7 @@ pub fn part1() -> usize {
     })
 }
 
+#[must_use]
 pub fn part2() -> usize {
     eval_muls(Multiplications::<P2> {
         input: INPUT.as_bytes(),

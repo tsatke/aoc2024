@@ -14,7 +14,7 @@ macro_rules! fast_uint_parse_impl {
         $(impl FromStrFast for $typ {
             fn from_str_fast(s: &str) -> Self {
                 s.bytes()
-                    .fold(0, |acc, c| acc * 10 + (c - b'0') as $typ)
+                    .fold(0, |acc, c| acc * 10 + <$typ>::from(c - b'0'))
             }
         })*
     };

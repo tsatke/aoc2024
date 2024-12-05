@@ -2,6 +2,7 @@ const INPUT: &str = include_str!("../inputs/input_day4.txt");
 
 const LINE_LENGTH: usize = 140;
 
+#[must_use]
 pub fn part1() -> usize {
     let bytes = INPUT.as_bytes();
 
@@ -24,7 +25,7 @@ pub fn part1() -> usize {
                 buf[2] = lines[2][i];
                 buf[3] = lines[3][i];
 
-                count += (&buf == b"XMAS" || &buf == b"SAMX") as usize;
+                count += usize::from(&buf == b"XMAS" || &buf == b"SAMX");
             }
 
             count
@@ -50,8 +51,8 @@ pub fn part1() -> usize {
                 buf_rl[2] = lines[2][i + 1];
                 buf_rl[3] = lines[3][i];
 
-                count += (&buf_lr == b"XMAS" || &buf_lr == b"SAMX") as usize;
-                count += (&buf_rl == b"XMAS" || &buf_rl == b"SAMX") as usize;
+                count += usize::from(&buf_lr == b"XMAS" || &buf_lr == b"SAMX");
+                count += usize::from(&buf_rl == b"XMAS" || &buf_rl == b"SAMX");
             }
 
             count
@@ -61,6 +62,7 @@ pub fn part1() -> usize {
     line_sum + col_sum + diag
 }
 
+#[must_use]
 pub fn part2() -> usize {
     INPUT
         .as_bytes()
@@ -82,8 +84,10 @@ pub fn part2() -> usize {
                 buf_rl[0] = lines[0][i + 1];
                 buf_rl[1] = lines[2][i - 1];
 
-                count += ((&buf_lr == b"MS" || &buf_lr == b"SM")
-                    && (&buf_rl == b"MS" || &buf_rl == b"SM")) as usize;
+                count += usize::from(
+                    (&buf_lr == b"MS" || &buf_lr == b"SM")
+                        && (&buf_rl == b"MS" || &buf_rl == b"SM"),
+                );
             }
 
             count

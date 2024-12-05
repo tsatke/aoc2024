@@ -3,6 +3,7 @@ use itertools::Itertools;
 
 const INPUT: &str = include_str!("../inputs/input_day2.txt");
 
+#[must_use]
 pub fn part1() -> usize {
     INPUT
         .lines()
@@ -39,6 +40,7 @@ fn into_array(arr: &mut [u8; 8], items: impl Iterator<Item = u8>) -> usize {
     last
 }
 
+#[must_use]
 pub fn part2() -> usize {
     INPUT
         .lines()

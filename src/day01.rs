@@ -19,6 +19,7 @@ fn populate_columns(left: &mut [i32; 1000], right: &mut [i32; 1000]) {
         });
 }
 
+#[must_use]
 pub fn part1() -> u32 {
     let mut left = [0_i32; LINES];
     let mut right = [0_i32; LINES];
@@ -32,6 +33,7 @@ pub fn part1() -> u32 {
         .fold(0, |acc, (a, b)| acc + a.abs_diff(b))
 }
 
+#[must_use]
 pub fn part2() -> i64 {
     let mut left = [0_i32; LINES];
     let mut right = [0_i32; LINES];
@@ -39,8 +41,9 @@ pub fn part2() -> i64 {
 
     let mut lut = [0_u16; 100000];
     right.iter().for_each(|&r| lut[r as usize] += 1);
-    left.iter()
-        .fold(0, |acc, &l| acc + ((l as i64) * lut[l as usize] as i64))
+    left.iter().fold(0, |acc, &l| {
+        acc + (i64::from(l) * i64::from(lut[l as usize]))
+    })
 }
 
 #[cfg(test)]

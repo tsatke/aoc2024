@@ -33,6 +33,7 @@ fn init() -> (
     (requirements, input)
 }
 
+#[must_use]
 pub fn part1() -> usize {
     let (requirements, input) = init();
 
@@ -44,7 +45,7 @@ pub fn part1() -> usize {
                 .is_sorted_by(|&l, r| requirements[l as usize].contains(r))
             {
                 let center = line.len() / 2;
-                Some(usize::from_str_fast(&line[center - 1..center + 1]))
+                Some(usize::from_str_fast(&line[(center - 1)..=center]))
             } else {
                 None
             }
@@ -52,6 +53,7 @@ pub fn part1() -> usize {
         .sum::<usize>()
 }
 
+#[must_use]
 pub fn part2() -> usize {
     let (requirements, input) = init();
 
