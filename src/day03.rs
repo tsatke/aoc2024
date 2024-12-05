@@ -29,7 +29,8 @@ impl<P> Multiplications<P> {
     fn parse_num(&mut self) -> Option<u16> {
         let mut left = 0;
         for i in 0..3 {
-            if !is_digit(self.input[self.index]) {
+            let c = self.input[self.index];
+            if !c.is_ascii_digit() {
                 if i == 0 {
                     // not even 1 digit
                     return None;
@@ -43,10 +44,6 @@ impl<P> Multiplications<P> {
         }
         Some(left)
     }
-}
-
-fn is_digit(c: u8) -> bool {
-    c >= b'0' && c <= b'9'
 }
 
 impl Iterator for Multiplications<P1> {

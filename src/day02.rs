@@ -23,7 +23,7 @@ fn is_slice_valid(elems: &[u8]) -> bool {
     is_iter_valid(elems.iter())
 }
 
-fn is_iter_valid<'a>(iter: impl Iterator<Item = &'a u8> + DoubleEndedIterator + Clone) -> bool {
+fn is_iter_valid<'a>(iter: impl DoubleEndedIterator<Item = &'a u8> + Clone) -> bool {
     iter.clone()
         .tuple_windows()
         .all(|(&a, &b)| (1..=3).contains(&a.abs_diff(b)))
@@ -49,7 +49,7 @@ pub fn part2() -> usize {
                 line.split_ascii_whitespace().map(u8::from_str_fast),
             );
             let full_line_elems = &full_line_elems[..=last];
-            is_slice_valid(&full_line_elems) || {
+            is_slice_valid(full_line_elems) || {
                 (0..line.len())
                     .map(|skip| {
                         full_line_elems

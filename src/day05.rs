@@ -2,8 +2,7 @@ use crate::FromStrFast;
 use ahash::AHasher;
 use std::cmp::Ordering;
 use std::collections::HashSet;
-use std::hash::{BuildHasher, Hasher};
-use std::ops::BitXor;
+use std::hash::BuildHasher;
 
 const INPUT: &str = include_str!("../inputs/input_day5.txt");
 
