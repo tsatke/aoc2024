@@ -173,6 +173,7 @@ pub fn part2() -> usize {
         direction: Direction::Up,
     };
     let mut visited = AHashSet::new();
+    let mut ghost_visited = AHashSet::new();
 
     let mut count = 0;
     loop {
@@ -192,7 +193,7 @@ pub fn part2() -> usize {
 
             // tile ahead is not an obstacle, so before stepping, check whether turning to the right here would force a loop
             {
-                let mut ghost_visited = AHashSet::new();
+                ghost_visited.clear();
                 let mut ghost = guard.clone();
                 ghost.turn();
 
