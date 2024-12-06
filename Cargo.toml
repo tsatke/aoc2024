@@ -17,4 +17,5 @@ harness = false
 [dependencies]
 ahash = "0.8.11"
 criterion = { version = "0.5.1", features = ["html_reports"] }
+hashbrown = { version = "0.15.2", features = ["nightly"] }
 itertools = "0.13.0"

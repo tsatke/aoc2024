@@ -1,6 +1,7 @@
 #![feature(custom_test_frameworks)]
 #![feature(iter_map_windows)]
 #![feature(array_windows)]
+#![feature(allocator_api)]
 extern crate core;
 
 pub mod day01;

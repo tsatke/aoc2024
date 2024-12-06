@@ -1,5 +1,9 @@
-use ahash::AHashSet;
+use hashbrown::HashSet;
+use std::alloc::{AllocError, Allocator, Layout};
+use std::cell::UnsafeCell;
 use std::ops::{Index, IndexMut};
+use std::ptr::NonNull;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 const LENGTH: usize = 130;
 const INPUT: &str = include_str!("../inputs/input_day6.txt");
@@ -140,13 +144,47 @@ pub fn part1() -> usize {
     count
 }
 
+struct MyArena<const SIZE: usize>(AtomicUsize, UnsafeCell<[u8; SIZE]>);
+
+impl<const SIZE: usize> MyArena<SIZE> {
+    unsafe fn clear(&self) {
+        self.0.store(0, Ordering::Relaxed);
+    }
+}
+
+unsafe impl<const SIZE: usize> Send for MyArena<SIZE> {}
+unsafe impl<const SIZE: usize> Sync for MyArena<SIZE> {}
+
+impl<const SIZE: usize> MyArena<SIZE> {
+    const fn new() -> Self {
+        Self(AtomicUsize::new(0), UnsafeCell::new([0; SIZE]))
+    }
+}
+
+unsafe impl<const SIZE: usize> Allocator for MyArena<SIZE> {
+    fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+        let layout = layout.pad_to_align();
+
+        let offset = self.0.fetch_add(layout.size(), Ordering::Relaxed);
+        let ptr = self.1.get() as *mut u8;
+        let ptr = unsafe { ptr.add(offset) };
+
+        unsafe { Ok(NonNull::new_unchecked(ptr as *mut [u8; SIZE])) }
+    }
+
+    unsafe fn deallocate(&self, _: NonNull<u8>, _: Layout) {
+        // do nothing
+    }
+}
+
 #[must_use]
 pub fn part2() -> usize {
+    static ARENA: MyArena<{ 1 << 16 }> = MyArena::new();
     let (mut pos, mut grid) = parse_input();
     let mut direction = Direction::Up;
 
-    let mut visited = AHashSet::new();
-    let mut ghost_visited = AHashSet::new();
+    let mut visited = HashSet::new_in(&ARENA);
+    let mut ghost_visited = HashSet::new_in(&ARENA);
 
     let mut count = 0;
     loop {
@@ -195,6 +233,8 @@ pub fn part2() -> usize {
         pos = pos_ahead;
         grid[pos] = Tile::Visited;
     }
+
+    unsafe { ARENA.clear() };
 
     count
 }
