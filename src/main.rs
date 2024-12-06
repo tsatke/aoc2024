@@ -11,4 +11,5 @@ pub fn main() {
     solve!(3, aoc2024::day03::part1, aoc2024::day03::part2);
     solve!(4, aoc2024::day04::part1, aoc2024::day04::part2);
     solve!(5, aoc2024::day05::part1, aoc2024::day05::part2);
+    solve!(6, aoc2024::day06::part1, aoc2024::day06::part2);
 }
