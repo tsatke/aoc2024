@@ -140,85 +140,60 @@ pub fn part1() -> usize {
     count
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
-struct Guard {
-    pos: Coord,
-    direction: Direction,
-}
-
-impl Guard {
-    fn step(&mut self) {
-        self.pos = self.ahead().unwrap();
-    }
-
-    fn turn(&mut self) {
-        self.direction = self.direction.rotate_right();
-    }
-
-    fn ahead(&self) -> Option<Coord> {
-        self.direction.apply(self.pos)
-    }
-
-    fn tile_ahead(&self, grid: &Grid) -> Option<Tile> {
-        self.ahead().map(|coord| grid[coord])
-    }
-}
-
 #[must_use]
 pub fn part2() -> usize {
-    let (pos, mut grid) = parse_input();
+    let (mut pos, mut grid) = parse_input();
+    let mut direction = Direction::Up;
 
-    let mut guard = Guard {
-        pos,
-        direction: Direction::Up,
-    };
     let mut visited = AHashSet::new();
     let mut ghost_visited = AHashSet::new();
 
     let mut count = 0;
     loop {
-        let Some(tile) = guard.tile_ahead(&grid) else {
+        let Some(pos_ahead) = direction.apply(pos) else {
             break;
         };
+        let tile = grid[pos_ahead];
         if tile == Tile::Obstacle {
-            guard.turn();
-            visited.insert(guard);
+            visited.insert((pos, direction));
+            direction = direction.rotate_right();
             continue;
         }
 
         // place ghost obstacle
-        let obstacle_pos = guard.ahead().unwrap();
+        let obstacle_pos = pos_ahead;
         if grid[obstacle_pos] == Tile::Free {
             grid[obstacle_pos] = Tile::Obstacle;
 
             // tile ahead is not an obstacle, so before stepping, check whether turning to the right here would force a loop
             {
                 ghost_visited.clear();
-                let mut ghost = guard.clone();
-                ghost.turn();
+                let mut ghost_pos = pos;
+                let mut ghost_direction = direction.rotate_right();
 
-                'ghost_walk: while let Some(t) = ghost.tile_ahead(&grid) {
-                    if t == Tile::Obstacle {
-                        ghost.turn();
-                        if (grid[ghost.pos] == Tile::Visited && visited.contains(&ghost))
-                            || ghost_visited.contains(&ghost)
+                'ghost_walk: while let Some(ghost_pos_ahead) = ghost_direction.apply(ghost_pos) {
+                    if grid[ghost_pos_ahead] == Tile::Obstacle {
+                        if (grid[ghost_pos] == Tile::Visited
+                            && visited.contains(&(ghost_pos, ghost_direction)))
+                            || ghost_visited.contains(&(ghost_pos, ghost_direction))
                         {
                             count += 1;
                             break 'ghost_walk;
                         }
-                        ghost_visited.insert(ghost);
+                        ghost_visited.insert((ghost_pos, ghost_direction));
+                        ghost_direction = ghost_direction.rotate_right();
                     } else {
-                        ghost.step();
+                        ghost_pos = ghost_pos_ahead;
                     }
                 }
             }
             // reset the ghost obstacle
-            grid[obstacle_pos] = tile;
+            grid[obstacle_pos] = Tile::Free;
         }
 
         // loop check done, step as usual
-        guard.step();
-        grid[guard.pos] = Tile::Visited;
+        pos = pos_ahead;
+        grid[pos] = Tile::Visited;
     }
 
     count
