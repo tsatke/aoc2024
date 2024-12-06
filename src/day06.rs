@@ -199,7 +199,9 @@ pub fn part2() -> usize {
                 'ghost_walk: while let Some(t) = ghost.tile_ahead(&grid) {
                     if t == Tile::Obstacle {
                         ghost.turn();
-                        if visited.contains(&ghost) || ghost_visited.contains(&ghost) {
+                        if (grid[ghost.pos] == Tile::Visited && visited.contains(&ghost))
+                            || ghost_visited.contains(&ghost)
+                        {
                             count += 1;
                             break 'ghost_walk;
                         }
