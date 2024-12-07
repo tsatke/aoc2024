@@ -35,44 +35,32 @@ pub fn part1() -> u64 {
                 return None;
             }
 
-            let mut mul_cache = [0_u64; 12];
-            let mut acc = 1;
-            for (i, &op) in operands.iter().enumerate() {
-                acc *= op;
-                mul_cache[i] = acc;
+            if is_valid(target, &operands) {
+                Some(target)
+            } else {
+                None
             }
-            if acc == target {
-                return Some(target);
-            }
-            // println!("cache: {:?} (operands: {:?})", mul_cache, operands);
-
-            for op_bits in 1_u16..=(1 << operands.len()) - 1 {
-                let idx = (op_bits.leading_zeros() as usize) - (16 - operands.len());
-                // println!("op_bits: {:05b} (idx: {})", op_bits, idx);
-                let mut acc = if idx == 0 { 0 } else { mul_cache[idx - 1] };
-                // print!("{} ", acc);
-
-                let mut mask = (1_u16 << (operands.len() - 1)) >> idx;
-                for op in &operands[idx..] {
-                    if op_bits & mask == mask {
-                        // print!("+ {} (0b{:b}) ", op, mask);
-                        acc += op;
-                    } else {
-                        // print!("* {} (0b{:b}) ", op, mask);
-                        acc *= op;
-                    }
-                    mask >>= 1;
-                }
-                // println!();
-
-                if acc == target {
-                    return Some(target);
-                }
-            }
-
-            None
         })
         .sum()
+}
+
+fn is_valid(target: u64, operands: &[u64]) -> bool {
+    if operands.len() == 1 {
+        return operands[0] == target;
+    }
+
+    let last_index = operands.len() - 1;
+    let last = operands[last_index];
+    let (res, rem) = divmod(target, last);
+    if rem == 0 && is_valid(res, &operands[..last_index]) {
+        true
+    } else {
+        target > last && is_valid(target - last, &operands[..last_index])
+    }
+}
+
+fn divmod(dd: u64, ds: u64) -> (u64, u64) {
+    (dd / ds, dd % ds)
 }
 
 #[must_use]
