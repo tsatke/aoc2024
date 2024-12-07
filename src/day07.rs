@@ -44,9 +44,6 @@ pub fn part1() -> u64 {
                     } else {
                         acc += op;
                     }
-                    if acc > target {
-                        continue;
-                    }
                 }
 
                 if acc == target {
