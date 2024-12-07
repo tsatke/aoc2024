@@ -25,6 +25,16 @@ pub fn part1() -> u64 {
                 .unwrap();
             let operands = &operands[..=last];
 
+            // if the target is smaller than the smallest number we can produce, skip
+            if operands.iter().sum::<u64>() - (operands.len() as Num) > target {
+                return None;
+            }
+
+            // if the target is larger than the largest number we can produce, skip
+            if operands.iter().fold(1, |l, &r| l * (r + 1)) < target {
+                return None;
+            }
+
             for op_bits in 0_u16..=(1 << operands.len()) - 1 {
                 let acc = operands.iter().enumerate().fold(0, |acc, (i, &op)| {
                     let mask = 1 << i;
