@@ -23,7 +23,7 @@ pub fn part1() -> u64 {
                 })
                 .last()
                 .unwrap();
-            let operands = &operands[..=last];
+            let operands = &mut operands[..=last];
 
             // if the target is smaller than the smallest number we can produce, skip
             if operands.iter().sum::<u64>() - (operands.len() as Num) > target {
@@ -36,14 +36,19 @@ pub fn part1() -> u64 {
             }
 
             for op_bits in 0_u16..=(1 << operands.len()) - 1 {
-                let acc = operands.iter().enumerate().fold(0, |acc, (i, &op)| {
+                let mut acc = 0;
+                for (i, &op) in operands.iter().enumerate() {
                     let mask = 1 << i;
                     if op_bits & mask == mask {
-                        acc * op
+                        acc *= op;
                     } else {
-                        acc + op
+                        acc += op;
                     }
-                });
+                    if acc > target {
+                        continue;
+                    }
+                }
+
                 if acc == target {
                     return Some(target);
                 }
