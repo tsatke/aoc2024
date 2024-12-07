@@ -23,7 +23,7 @@ pub fn part1() -> u64 {
                 })
                 .last()
                 .unwrap();
-            let operands = &mut operands[..=last];
+            let operands = &operands[..=last];
 
             // if the target is smaller than the smallest number we can produce, skip
             if operands.iter().sum::<u64>() - (operands.len() as Num) > target {
@@ -35,16 +35,35 @@ pub fn part1() -> u64 {
                 return None;
             }
 
-            for op_bits in 0_u16..=(1 << operands.len()) - 1 {
-                let mut acc = 0;
-                for (i, &op) in operands.iter().enumerate() {
-                    let mask = 1 << i;
+            let mut mul_cache = [0_u64; 12];
+            let mut acc = 1;
+            for (i, &op) in operands.iter().enumerate() {
+                acc *= op;
+                mul_cache[i] = acc;
+            }
+            if acc == target {
+                return Some(target);
+            }
+            // println!("cache: {:?} (operands: {:?})", mul_cache, operands);
+
+            for op_bits in 1_u16..=(1 << operands.len()) - 1 {
+                let idx = (op_bits.leading_zeros() as usize) - (16 - operands.len());
+                // println!("op_bits: {:05b} (idx: {})", op_bits, idx);
+                let mut acc = if idx == 0 { 0 } else { mul_cache[idx - 1] };
+                // print!("{} ", acc);
+
+                let mut mask = (1_u16 << (operands.len() - 1)) >> idx;
+                for op in &operands[idx..] {
                     if op_bits & mask == mask {
+                        // print!("+ {} (0b{:b}) ", op, mask);
                         acc += op;
                     } else {
+                        // print!("* {} (0b{:b}) ", op, mask);
                         acc *= op;
                     }
+                    mask >>= 1;
                 }
+                // println!();
 
                 if acc == target {
                     return Some(target);
@@ -68,6 +87,7 @@ mod tests {
     #[test]
     fn test_results() {
         assert_eq!(part1(), 3351424677624);
+        // assert_eq!(part1(), 3749);
         assert_eq!(part2(), 0);
     }
 }
