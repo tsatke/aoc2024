@@ -44,6 +44,7 @@ pub fn part1() -> u64 {
         .sum()
 }
 
+#[inline(always)]
 fn is_valid(target: u64, operands: &[u64]) -> bool {
     if operands.len() == 1 {
         return operands[0] == target;
@@ -51,16 +52,12 @@ fn is_valid(target: u64, operands: &[u64]) -> bool {
 
     let last_index = operands.len() - 1;
     let last = operands[last_index];
-    let (res, rem) = divmod(target, last);
+    let (res, rem) = (target / last, target % last);
     if rem == 0 && is_valid(res, &operands[..last_index]) {
         true
     } else {
         target > last && is_valid(target - last, &operands[..last_index])
     }
-}
-
-fn divmod(dd: u64, ds: u64) -> (u64, u64) {
-    (dd / ds, dd % ds)
 }
 
 #[must_use]
@@ -75,7 +72,6 @@ mod tests {
     #[test]
     fn test_results() {
         assert_eq!(part1(), 3351424677624);
-        // assert_eq!(part1(), 3749);
         assert_eq!(part2(), 0);
     }
 }
