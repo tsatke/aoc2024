@@ -40,9 +40,9 @@ pub fn part1() -> u64 {
                 for (i, &op) in operands.iter().enumerate() {
                     let mask = 1 << i;
                     if op_bits & mask == mask {
-                        acc *= op;
-                    } else {
                         acc += op;
+                    } else {
+                        acc *= op;
                     }
                 }
 
