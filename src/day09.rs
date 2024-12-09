@@ -19,9 +19,7 @@ pub fn part1() -> usize {
         let free = if chunk.len() == 1 { 0 } else { chunk[1] - b'0' };
 
         // process first half
-        for i in 0..len {
-            checksum += id * (file_offset + i as usize); // TODO: factor out `id`
-        }
+        checksum += (0..len as usize).map(|i| file_offset + i).sum::<usize>() * id;
 
         // process second half
         let mut other_id = last_index / 2;
