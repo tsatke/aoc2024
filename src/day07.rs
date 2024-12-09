@@ -4,8 +4,7 @@ const INPUT: &str = include_str!("../inputs/input_day7.txt");
 
 type Num = u64;
 
-#[must_use]
-pub fn part1() -> u64 {
+fn solve<const PART2: bool>() -> u64 {
     INPUT
         .lines()
         .filter_map(|line| {
@@ -35,7 +34,7 @@ pub fn part1() -> u64 {
                 return None;
             }
 
-            if is_valid(target, &operands) {
+            if is_valid::<PART2>(target, &operands) {
                 Some(target)
             } else {
                 None
@@ -45,7 +44,7 @@ pub fn part1() -> u64 {
 }
 
 #[inline(always)]
-fn is_valid(target: u64, operands: &[u64]) -> bool {
+fn is_valid<const CONCAT: bool>(target: u64, operands: &[u64]) -> bool {
     if operands.len() == 1 {
         return operands[0] == target;
     }
@@ -53,16 +52,25 @@ fn is_valid(target: u64, operands: &[u64]) -> bool {
     let last_index = operands.len() - 1;
     let last = operands[last_index];
     let (res, rem) = (target / last, target % last);
-    if rem == 0 && is_valid(res, &operands[..last_index]) {
+    if rem == 0 && is_valid::<CONCAT>(res, &operands[..last_index]) {
         true
+    } else if target > last && is_valid::<CONCAT>(target - last, &operands[..last_index]) {
+        return true;
+    } else if CONCAT {
+        todo!()
     } else {
-        target > last && is_valid(target - last, &operands[..last_index])
+        false
     }
 }
 
 #[must_use]
-pub fn part2() -> usize {
-    0
+pub fn part1() -> u64 {
+    solve::<false>()
+}
+
+#[must_use]
+pub fn part2() -> u64 {
+    solve::<true>()
 }
 
 #[cfg(test)]
