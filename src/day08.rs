@@ -1,5 +1,4 @@
 use crate::slab::Slab;
-use std::collections::HashSet;
 
 const LINES: usize = 50;
 
@@ -30,7 +29,7 @@ pub fn part1() -> usize {
     let mut antennas = [const { Slab::<LINES, usize>::new() }; u8::MAX as usize];
     populate_antennas(&mut antennas);
 
-    let mut antinodes = HashSet::new();
+    let mut antinodes = [false; LINES * LINES];
 
     for frequency in (b'0'..=b'9').chain(b'a'..=b'z').chain(b'A'..=b'Z') {
         let slab = &antennas[frequency as usize];
@@ -50,17 +49,17 @@ pub fn part1() -> usize {
 
                 let pt1 = (right.0 + dx, right.1 + dy);
                 if within_bounds(pt1) {
-                    antinodes.insert(pt1);
+                    antinodes[pt1.0 as usize * LINES + pt1.1 as usize] = true;
                 }
                 let pt2 = (left.0 - dx, left.1 - dy);
                 if within_bounds(pt2) {
-                    antinodes.insert(pt2);
+                    antinodes[pt2.0 as usize * LINES + pt2.1 as usize] = true;
                 }
             }
         }
     }
 
-    antinodes.len()
+    antinodes.iter().filter(|&&b| b).count()
 }
 
 #[must_use]
@@ -68,7 +67,7 @@ pub fn part2() -> usize {
     let mut antennas = [const { Slab::<LINES, usize>::new() }; u8::MAX as usize];
     populate_antennas(&mut antennas);
 
-    let mut antinodes = HashSet::new();
+    let mut antinodes = [false; LINES * LINES];
 
     for frequency in (b'0'..=b'9').chain(b'a'..=b'z').chain(b'A'..=b'Z') {
         let slab = &antennas[frequency as usize];
@@ -88,19 +87,19 @@ pub fn part2() -> usize {
 
                 let mut current = left;
                 while within_bounds(current) {
-                    antinodes.insert(current);
+                    antinodes[current.0 as usize * LINES + current.1 as usize] = true;
                     current = (current.0 - dx, current.1 - dy);
                 }
                 current = right;
                 while within_bounds(current) {
-                    antinodes.insert(current);
+                    antinodes[current.0 as usize * LINES + current.1 as usize] = true;
                     current = (current.0 + dx, current.1 + dy);
                 }
             }
         }
     }
 
-    antinodes.len()
+    antinodes.iter().filter(|&&b| b).count()
 }
 
 #[cfg(test)]
