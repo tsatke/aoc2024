@@ -6,6 +6,12 @@ pub struct Slab<const CAP: usize, T> {
     len: usize,
 }
 
+impl<const CAP: usize, T> Default for Slab<CAP, T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<const CAP: usize, T> Slab<CAP, T> {
     pub const fn new() -> Self {
         Self {
