@@ -24,14 +24,16 @@ fn solve<const PART2: bool>() -> u64 {
                 .unwrap();
             let operands = &operands[..=last];
 
-            // if the target is smaller than the smallest number we can produce, skip
-            if operands.iter().sum::<u64>() - (operands.len() as Num) > target {
-                return None;
-            }
+            if !PART2 {
+                // if the target is smaller than the smallest number we can produce, skip
+                if operands.iter().sum::<u64>() - (operands.len() as Num) > target {
+                    return None;
+                }
 
-            // if the target is larger than the largest number we can produce, skip
-            if operands.iter().fold(1, |l, &r| l * (r + 1)) < target {
-                return None;
+                // if the target is larger than the largest number we can produce, skip
+                if operands.iter().fold(1, |l, &r| l * (r + 1)) < target {
+                    return None;
+                }
             }
 
             if is_valid::<PART2>(target, &operands) {
@@ -55,9 +57,18 @@ fn is_valid<const CONCAT: bool>(target: u64, operands: &[u64]) -> bool {
     if rem == 0 && is_valid::<CONCAT>(res, &operands[..last_index]) {
         true
     } else if target > last && is_valid::<CONCAT>(target - last, &operands[..last_index]) {
-        return true;
+        true
     } else if CONCAT {
-        todo!()
+        let log10 = 10_u64.pow(last.ilog10() + 1);
+
+        // if we can divide by log10, then divide by [last-1] and sub [last], we're good and technically
+        // did the concatenation
+
+        // simply put: 5014: 5 10 14 = 5 * 10 || 14 = 5 * 10 * 100 + 14, and we can boil down
+        // *100+14 in a single step without mutating the operands
+
+        let (res, rem) = (target / log10, target % log10);
+        rem == last && is_valid::<CONCAT>(res, &operands[..last_index])
     } else {
         false
     }
@@ -80,6 +91,6 @@ mod tests {
     #[test]
     fn test_results() {
         assert_eq!(part1(), 3351424677624);
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 204976636995111);
     }
 }
