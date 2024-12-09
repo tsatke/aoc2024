@@ -59,7 +59,7 @@ fn is_valid<const CONCAT: bool>(target: u64, operands: &[u64]) -> bool {
     } else if target > last && is_valid::<CONCAT>(target - last, &operands[..last_index]) {
         true
     } else if CONCAT {
-        let log10 = 10_u64.pow(last.ilog10() + 1);
+        let log10 = 10_u32.pow(fast_log10(last as u32) + 1) as u64;
 
         // if we can divide by log10, then divide by [last-1] and sub [last], we're good and technically
         // did the concatenation
@@ -72,6 +72,26 @@ fn is_valid<const CONCAT: bool>(target: u64, operands: &[u64]) -> bool {
     } else {
         false
     }
+}
+
+// thanks https://da-data.blogspot.com/2023/02/integer-log10-in-rust-and-c.html
+fn fast_log10(n: u32) -> u32 {
+    const TEN_THRESHOLDS: [u32; 10] = [
+        9,
+        99,
+        999,
+        9999,
+        99999,
+        999999,
+        9999999,
+        99999999,
+        999_999_999,
+        u32::MAX,
+    ];
+
+    let guess = (n.ilog2() * 9) >> 5;
+    let ttg = TEN_THRESHOLDS[guess as usize];
+    guess + (n > ttg) as u32
 }
 
 #[must_use]
@@ -92,5 +112,12 @@ mod tests {
     fn test_results() {
         assert_eq!(part1(), 3351424677624);
         assert_eq!(part2(), 204976636995111);
+    }
+
+    #[test]
+    fn foo() {
+        for i in 1_u32..100000 {
+            assert_eq!(fast_log10(i), i.ilog10(), "incorrect for {i}");
+        }
     }
 }
