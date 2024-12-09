@@ -11,6 +11,7 @@ pub mod day04;
 pub mod day05;
 pub mod day06;
 pub mod day07;
+pub mod slab;
 
 macro_rules! fast_uint_parse_impl {
     ($($typ:ty),*) => {

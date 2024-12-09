@@ -1,3 +1,4 @@
+use crate::slab::Slab;
 use crate::FromStrFast;
 use ahash::AHasher;
 use std::cmp::Ordering;
@@ -59,17 +60,11 @@ pub fn part2() -> usize {
 
     input
         .filter_map(|line| {
-            let mut elems = [0_u8; 23];
-            let mut last = 0;
+            let mut elems = Slab::<23, u8>::new();
             line.split(',')
                 .map(u8::from_str_fast)
-                .zip(elems.iter_mut())
-                .enumerate()
-                .for_each(|(i, (elem, slot))| {
-                    *slot = elem;
-                    last = i;
-                });
-            let elems = &mut elems[..=last];
+                .for_each(|elem| elems.push_back(elem));
+
             if elems.is_sorted_by(|&l, r| requirements[l as usize].contains(r)) {
                 None
             } else {
