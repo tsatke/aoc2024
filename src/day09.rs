@@ -53,9 +53,23 @@ pub fn part1() -> usize {
     checksum
 }
 
+const LENGTH: usize = 19999;
+
 #[must_use]
 pub fn part2() -> usize {
-    0
+    let mut bytes = [0_u8; LENGTH];
+    bytes.copy_from_slice(INPUT.as_bytes());
+
+    let mut checksum = 0;
+    checksum += 0;
+
+    /*
+    - compute checksum from back to front
+    - checksum for files that are moved can still be computed, because sum is commutative and we know the offset and id
+    - copy file system and modify to keep track of free space
+     */
+
+    checksum
 }
 
 #[cfg(test)]
